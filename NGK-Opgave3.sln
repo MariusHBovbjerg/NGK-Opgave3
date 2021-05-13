@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31112.23
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NGK-Opgave3", "NKG-11\NGK-Opgave3.csproj", "{90D16952-D7A4-40C2-93E5-D9CC17796499}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{90D16952-D7A4-40C2-93E5-D9CC17796499}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{90D16952-D7A4-40C2-93E5-D9CC17796499}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{90D16952-D7A4-40C2-93E5-D9CC17796499}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{90D16952-D7A4-40C2-93E5-D9CC17796499}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {5E046F71-3883-4065-AB14-9C1BE8802E44}
+	EndGlobalSection
+EndGlobal
