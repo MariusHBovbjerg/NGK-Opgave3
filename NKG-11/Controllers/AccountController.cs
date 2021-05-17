@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -30,27 +31,29 @@ namespace NGK_11.Controllers
             _appSettings = appSettings.Value;
         }
 
+
         [HttpPost("register"), AllowAnonymous]
-        public async Task<ActionResult<TokenDto>> Register(UserDto regUser)
+        public async Task<ActionResult<TokenDto>> RegisterFromBody(UserDto regUser)
         {
-            regUser.Email = regUser.Email.ToLower();
-            var emailExist = await _context.Users.Where(u => u.Email == regUser.Email).FirstOrDefaultAsync();
-            if (emailExist != null)
+
+            var (token,user) = await RegisterUser(regUser);
+            if(token == null || user == null)
+            {
                 return BadRequest(new { errorMessage = "Email already in use" });
-            User user = new()
-            {
-                Email = regUser.Email,
-                FirstName = regUser.FirstName,
-                LastName = regUser.LastName
-            };
-            user.PwHash = HashPassword(regUser.Password, BcryptWorkfactor);
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
-            var token = new TokenDto
-            {
-                JWT = GenerateToken(user)
-            };
+            }
             return CreatedAtAction("Get", new { id = user.UserId }, token);
+        }
+
+        [HttpPost("registerFromForm"), AllowAnonymous]
+        public async Task<ActionResult<TokenDto>> RegisterFromForm([FromForm]UserDto regUser)
+        {
+            var (token, user) = await RegisterUser(regUser);
+            if (token == null || user == null)
+            {
+                return BadRequest(new { errorMessage = "Email already in use" });
+            }
+            
+            return NoContent();
         }
 
         [HttpPost("login"), AllowAnonymous]
@@ -96,12 +99,7 @@ namespace NGK_11.Controllers
 
         private string GenerateToken(User user)
         {
-            //Claim roleClaim;
-            //if (isSomething)
-            //    roleClaim = new Claim("Role", "Admin");
-            //else
-            //    roleClaim = new Claim("Role", "Worker");
-
+            
             var claims = new Claim[]
             {
                 new Claim("Email", user.Email),
@@ -118,6 +116,29 @@ namespace NGK_11.Controllers
                       new JwtPayload(claims));
 
             return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        private async Task<(TokenDto,User)> RegisterUser(UserDto regUser)
+        {
+            regUser.Email = regUser.Email.ToLower();
+            var emailExist = await _context.Users.Where(u => u.Email == regUser.Email).FirstOrDefaultAsync();
+            if (emailExist != null)
+                return (null,null);
+            User user = new()
+            {
+                Email = regUser.Email,
+                FirstName = regUser.FirstName,
+                LastName = regUser.LastName
+            };
+            user.PwHash = HashPassword(regUser.Password, BcryptWorkfactor);
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync();
+            var token = new TokenDto
+            {
+                JWT = GenerateToken(user)
+            };
+            
+            return (token,user);
         }
     }
 }
