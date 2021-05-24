@@ -27,7 +27,7 @@ namespace NGK_11
         {
             services.AddControllers();
             services.AddSignalR();
-            services.AddTransient<ChatHub>();
+            services.AddTransient<MeasurementHub>();
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer("server=[::1],1433; User Id=SA; Password=password_123; database=NGKOpgave3; trusted_connection=false;"));
 
@@ -66,7 +66,7 @@ namespace NGK_11
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
 
             app.UseRouting();
 
@@ -76,7 +76,7 @@ namespace NGK_11
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-                endpoints.MapHub<ChatHub>("/chatHub");
+                endpoints.MapHub<MeasurementHub>("/MeasurementHub");
             });
         }
     }

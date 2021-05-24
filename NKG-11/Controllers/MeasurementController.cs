@@ -17,12 +17,12 @@ namespace NGK_11.Controllers
     public class MeasurementController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
-        private readonly IHubContext<ChatHub> _chathub;
+        private readonly IHubContext<MeasurementHub> _measurementhub;
 
-        public MeasurementController(ApplicationDbContext context, IHubContext<ChatHub> chathub)
+        public MeasurementController(ApplicationDbContext context, IHubContext<MeasurementHub> measurementHub)
         {
             _context = context;
-            _chathub = chathub;
+            _measurementhub = measurementHub;
         }
 
         // GET: api/Products
@@ -128,6 +128,7 @@ namespace NGK_11.Controllers
             await _context.SaveChangesAsync();
 
             //TODO: send message to all connected users with signalR
+            await _measurementhub.Clients.All.SendAsync("ReceiveMessage",measurement);
 
             return CreatedAtAction("GetMeasurement", new { id = measurement.MeasurementID }, measurement);
         }
