@@ -9,6 +9,7 @@ using Microsoft.IdentityModel.Tokens;
 using NGK_11.Data;
 using NGK_11.Utilities;
 using System.Text;
+using NKG_11.Hubs;
 
 namespace NGK_11
 {
@@ -25,6 +26,8 @@ namespace NGK_11
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.AddSignalR();
+            services.AddTransient<ChatHub>();
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer("server=[::1],1433; User Id=SA; Password=password_123; database=NGKOpgave3; trusted_connection=false;"));
 
@@ -73,6 +76,7 @@ namespace NGK_11
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHub<ChatHub>("/chatHub");
             });
         }
     }

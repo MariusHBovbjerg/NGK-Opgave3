@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using NGK_11.Data;
 using NGK_11.Models;
+using NKG_11.Hubs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,10 +17,12 @@ namespace NGK_11.Controllers
     public class MeasurementController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        private readonly IHubContext<ChatHub> _chathub;
 
-        public MeasurementController(ApplicationDbContext context)
+        public MeasurementController(ApplicationDbContext context, IHubContext<ChatHub> chathub)
         {
             _context = context;
+            _chathub = chathub;
         }
 
         // GET: api/Products
@@ -122,6 +126,7 @@ namespace NGK_11.Controllers
         {
             _context.Measurements.Add(measurement);
             await _context.SaveChangesAsync();
+
 
             return CreatedAtAction("GetMeasurement", new { id = measurement.MeasurementID }, measurement);
         }
