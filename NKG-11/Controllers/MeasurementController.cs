@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NGK_11.Data;
 using NGK_11.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -24,14 +25,54 @@ namespace NGK_11.Controllers
         [HttpGet, AllowAnonymous]
         public async Task<ActionResult<IEnumerable<Measurement>>> GetMeasurements()
         {
-            return await _context.Measurements.ToListAsync();
+            return await _context.Measurements.Include(m => m.LocationOfMeasurement).ToListAsync();
         }
 
         // GET: api/Products/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Measurement>> GetMeasurement(long id)
         {
-            var Measurement = await _context.Measurements.FindAsync(id);
+            var Measurement = await _context.Measurements.Include(m => m.LocationOfMeasurement).Where(m => m.MeasurementID == id).FirstAsync();
+
+            if (Measurement == null)
+            {
+                return NotFound();
+            }
+
+            return Measurement;
+        }
+
+        [HttpGet("new")]
+        public async Task<ActionResult<IEnumerable<Measurement>>> GetMeasurement()
+        {
+            var Measurement = await _context.Measurements.Include(m => m.LocationOfMeasurement).OrderByDescending(m => m.MeasurementID).Take(3).ToListAsync();
+            
+            if (Measurement == null)
+            {
+                return NotFound();
+            }
+
+            return Measurement;
+        }
+
+        [HttpGet("filter/{filterdate}")]
+        public async Task<ActionResult<IEnumerable<Measurement>>> GetMeasurement(DateTime filterdate)
+        {
+            var Measurement = await _context.Measurements.Include(m => m.LocationOfMeasurement).Where(m => m.TimeOfMeasurement.Year == filterdate.Year & m.TimeOfMeasurement.Month == filterdate.Month & m.TimeOfMeasurement.Day == filterdate.Day).ToListAsync();
+
+            if (Measurement == null)
+            {
+                return NotFound();
+            }
+
+            return Measurement;
+        }
+
+        // GET: api/Products/5
+        [HttpGet("{date1}/{date2}")]
+        public async Task<ActionResult<IEnumerable<Measurement>>> GetMeasurement(DateTime date1, DateTime date2)
+        {
+            var Measurement = await _context.Measurements.Include(m => m.LocationOfMeasurement).Where(m => m.TimeOfMeasurement >= date1 & m.TimeOfMeasurement <= date2).ToListAsync();
 
             if (Measurement == null)
             {
