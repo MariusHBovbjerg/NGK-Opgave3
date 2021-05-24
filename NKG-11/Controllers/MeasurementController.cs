@@ -127,6 +127,7 @@ namespace NGK_11.Controllers
             _context.Measurements.Add(measurement);
             await _context.SaveChangesAsync();
 
+            //TODO: send message to all connected users with signalR
 
             return CreatedAtAction("GetMeasurement", new { id = measurement.MeasurementID }, measurement);
         }
